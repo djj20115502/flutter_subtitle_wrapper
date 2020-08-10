@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   subtitleType: SubtitleType.webvtt,
                 ),
                 subtitleStyle: SubtitleStyle(
-                  textColor: Colors.white,
+                  textColor: Colors.red,
                   hasBorder: true,
                 ),
                 videoChild: FijkView(

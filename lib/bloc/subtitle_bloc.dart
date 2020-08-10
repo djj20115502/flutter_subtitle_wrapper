@@ -44,18 +44,17 @@ class SubtitleBloc extends Bloc<SubtitleEvent, SubtitleState> {
 
   Stream<SubtitleState> loadSubtitle() async* {
     yield LoadingSubtitle();
-    videoPlayerController.addListener(() {
-      Duration videoPlayerPosition = videoPlayerController.currentPos;
-      if (videoPlayerPosition != null) {
+    videoPlayerController.onCurrentPosUpdate.listen((event){
+       if (event != null) {
         for (Subtitle subtitleItem in subtitles.subtitles) {
-          if (videoPlayerPosition.inMilliseconds >
-                  subtitleItem.startTime.inMilliseconds &&
-              videoPlayerPosition.inMilliseconds <
+          if (event.inMilliseconds >
+              subtitleItem.startTime.inMilliseconds &&
+              event.inMilliseconds <
                   subtitleItem.endTime.inMilliseconds) {
             add(UpdateLoadedSubtitle(subtitle: subtitleItem));
           }
         }
       }
     });
-  }
+   }
 }
