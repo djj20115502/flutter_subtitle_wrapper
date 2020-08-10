@@ -1,8 +1,9 @@
 import 'package:chewie/chewie.dart';
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
+import 'package:subtitle_wrapper_package/data/models/style/subtitle_style.dart';
 import 'package:subtitle_wrapper_package/subtitle_controller.dart';
 import 'package:subtitle_wrapper_package/subtitle_wrapper_package.dart';
-import 'package:subtitle_wrapper_package/data/models/style/subtitle_style.dart';
 import 'package:video_player/video_player.dart';
 
 void main() => runApp(MyApp());
@@ -46,41 +47,25 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState(
-      "https://d11b76aq44vj33.cloudfront.net/media/720/video/5def7824adbbc.mp4",
-      "https://pastebin.com/raw/ZWWAL7fK");
+      "http://static.jystarfod.com/group1/M00/20/FC/b0QEkl7Say2Ab14YAABgrCYPplM30.m3u8",
+      "http://static.jystarfod.com/group1/M00/60/BE/b0QEkl8fzNKAZqnoAAKtdKQ2u4M781.vtt");
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  VideoPlayerController videoPlayerController;
-  ChewieController chewieController;
   final String link;
   final String subtitleUrl;
+  FijkPlayer fijkPlayer;
 
   _MyHomePageState(this.link, this.subtitleUrl);
 
-  VideoPlayerController getVideoPlayerController() {
-    if (videoPlayerController == null) {
-      videoPlayerController = new VideoPlayerController.network(link);
-    }
-    return videoPlayerController;
-  }
-
-  ChewieController getChewieController() {
-    if (chewieController == null) {
-      chewieController = ChewieController(
-        videoPlayerController: getVideoPlayerController(),
-        aspectRatio: 3 / 2,
-        autoPlay: true,
-        autoInitialize: true,
-      );
-    }
-    return chewieController;
+  @override
+  void initState() {
+    super.initState();
+    fijkPlayer = FijkPlayer();
   }
 
   @override
   Widget build(BuildContext context) {
-    ChewieController chewieController = getChewieController();
-
     return Scaffold(
       body: Column(
         children: [
@@ -89,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Card(
               elevation: 2.0,
               child: SubTitleWrapper(
-                videoPlayerController: chewieController.videoPlayerController,
+                player: fijkPlayer,
                 subtitleController: SubtitleController(
                   subtitleUrl: subtitleUrl,
                   showSubtitles: true,
@@ -100,8 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   textColor: Colors.white,
                   hasBorder: true,
                 ),
-                videoChild: Chewie(
-                  controller: chewieController,
+                videoChild: FijkView(
+                  height: 600,
+                  player: fijkPlayer
+                    ..setDataSource(link, autoPlay: true)
+                    ..applyOptions(
+                        FijkOption()..setHostOption("referer", "kkkanju.com")),
                 ),
               ),
             ),
@@ -114,10 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     super.dispose();
-    if (videoPlayerController != null && chewieController != null) {
-      videoPlayerController?.dispose();
-      chewieController?.dispose();
-    }
+    fijkPlayer?.dispose();
     debugPrint('videoPlayerController - dispose()');
   }
 }

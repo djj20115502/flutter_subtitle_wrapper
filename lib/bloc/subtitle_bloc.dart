@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:subtitle_wrapper_package/data/models/subtitle.dart';
 import 'package:subtitle_wrapper_package/data/models/subtitles.dart';
@@ -13,7 +14,7 @@ part 'subtitle_event.dart';
 part 'subtitle_state.dart';
 
 class SubtitleBloc extends Bloc<SubtitleEvent, SubtitleState> {
-  final VideoPlayerController videoPlayerController;
+  final FijkPlayer videoPlayerController;
   final SubtitleRepository subtitleRepository;
 
   Subtitles subtitles;
@@ -45,7 +46,7 @@ class SubtitleBloc extends Bloc<SubtitleEvent, SubtitleState> {
   Stream<SubtitleState> loadSubtitle() async* {
     yield LoadingSubtitle();
     videoPlayerController.addListener(() {
-      Duration videoPlayerPosition = videoPlayerController.value.position;
+      Duration videoPlayerPosition = videoPlayerController.currentPos;
       if (videoPlayerPosition != null) {
         for (Subtitle subtitleItem in subtitles.subtitles) {
           if (videoPlayerPosition.inMilliseconds >
